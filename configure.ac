@@ -22,9 +22,9 @@ dnl Set various version strings - taken gratefully from the GTk sources
 #
 SDL_MAJOR_VERSION=2
 SDL_MINOR_VERSION=0
-SDL_MICRO_VERSION=19
-SDL_INTERFACE_AGE=1
-SDL_BINARY_AGE=19
+SDL_MICRO_VERSION=21
+SDL_INTERFACE_AGE=3
+SDL_BINARY_AGE=21
 SDL_VERSION=$SDL_MAJOR_VERSION.$SDL_MINOR_VERSION.$SDL_MICRO_VERSION
 
 AC_SUBST(SDL_MAJOR_VERSION)
@@ -241,10 +241,9 @@ fi
 AC_MSG_CHECKING(for linker option --no-undefined)
 have_no_undefined=no
 case "$host" in
-    dnl Skip this on platforms where it is just simply busted.
+dnl Skip this on platforms where it is just simply busted.
     *-*-openbsd*)
         ;;
-
     *)
         save_LDFLAGS="$LDFLAGS"
         LDFLAGS="$LDFLAGS -Wl,--no-undefined"
@@ -309,25 +308,19 @@ AC_ARG_ENABLE(libc,
 if test x$enable_libc = xyes; then
     AC_DEFINE(HAVE_LIBC, 1, [ ])
 
-    dnl Check for C library headers
+dnl Check for C library headers
     AC_HEADER_STDC
     AC_CHECK_HEADERS(sys/types.h stdio.h stdlib.h stddef.h stdarg.h malloc.h memory.h string.h strings.h wchar.h inttypes.h stdint.h limits.h ctype.h math.h float.h iconv.h signal.h)
 
-    dnl Check for typedefs, structures, etc.
+dnl Check for typedefs, structures, etc.
     AC_TYPE_SIZE_T
 
-    dnl Check for defines
+dnl Check for defines
     AC_CHECK_DEFINE(M_PI, math.h)
 
-    dnl Checks for library functions.
-    case "$host" in
-    *-*-cygwin* | *-*-mingw*)
-        ;;
-    *)
-        AC_FUNC_ALLOCA
-        ;;
-    esac
+    AC_FUNC_ALLOCA
 
+dnl Checks for library functions.
     AC_FUNC_MEMCMP
     if test x$ac_cv_func_memcmp_working = xyes; then
         AC_DEFINE(HAVE_MEMCMP, 1, [ ])
@@ -354,7 +347,7 @@ if test x$enable_libc = xyes; then
 
     AC_CHECK_MEMBER(struct sigaction.sa_sigaction,[AC_DEFINE([HAVE_SA_SIGACTION], 1, [ ])], ,[#include <signal.h>])
 
-    dnl Check for additional non-standard headers
+dnl Check for additional non-standard headers
     AC_CHECK_HEADERS(libunwind.h)
 fi
 
@@ -582,7 +575,7 @@ if test x$enable_assembly = xyes; then
         fi
     fi
 
-    dnl Check for various instruction support
+dnl Check for various instruction support
     AC_ARG_ENABLE(mmx,
 [AS_HELP_STRING([--enable-mmx], [use MMX assembly routines [default=yes]])],
                   , enable_mmx=yes)
@@ -1504,7 +1497,7 @@ CheckWarnAll()
     if test x$have_gcc_Wall = xyes; then
         EXTRA_CFLAGS="$EXTRA_CFLAGS -Wall"
 
-        dnl Haiku headers use multicharacter constants all over the place. Ignore these warnings when using -Wall.
+dnl Haiku headers use multicharacter constants all over the place. Ignore these warnings when using -Wall.
         AC_MSG_CHECKING(for necessary GCC -Wno-multichar option)
         need_gcc_Wno_multichar=no
         case "$host" in
@@ -1566,7 +1559,7 @@ dnl FIXME: Do BSD and OS X need special cases?
                     wayland_client_lib=[`find_lib "libwayland-client.so.*" "$WAYLAND_LIBS" | sed 's/.*\/\(.*\)/\1/; q'`]
                     wayland_egl_lib=[`find_lib "libwayland-egl.so.*" "$WAYLAND_LIBS" | sed 's/.*\/\(.*\)/\1/; q'`]
                     if test x$wayland_egl_lib = x; then
-                        dnl This works in Ubuntu 13.10, maybe others
+                        # This works in Ubuntu 13.10, maybe others
                         wayland_egl_lib=[`find_lib "mesa-egl/libwayland-egl.so.*" "$WAYLAND_LIBS" | sed 's/.*\/\(.*\)/\1/; q'`]
                     fi
                     wayland_cursor_lib=[`find_lib "libwayland-cursor.so.*" "$WAYLAND_LIBS" | sed 's/.*\/\(.*\)/\1/; q'`]
@@ -1834,7 +1827,6 @@ CheckX11()
             fi
             have_video=yes
 
-            dnl AC_CHECK_LIB(X11, XGetEventData, AC_DEFINE(SDL_VIDEO_DRIVER_X11_SUPPORTS_GENERIC_EVENTS, 1, [Have XGenericEvent]))
             AC_MSG_CHECKING([for XGenericEvent])
             have_XGenericEvent=no
             AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
@@ -2005,7 +1997,7 @@ XITouchClassInfo *t;
 [AS_HELP_STRING([--enable-video-x11-xrandr], [enable X11 Xrandr extension for fullscreen [default=yes]])],
                             , enable_video_x11_xrandr=yes)
             if test x$enable_video_x11_xrandr = xyes; then
-                dnl XRRScreenResources is only present in Xrandr >= 1.2, we use that as a test.
+dnl             XRRScreenResources is only present in Xrandr >= 1.2, we use that as a test.
                 definitely_enable_video_x11_xrandr=no
                 have_xrandr_h_hdr=no
                 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
@@ -2167,7 +2159,7 @@ CheckCOCOA()
                   , enable_video_cocoa=yes)
     if test x$enable_video = xyes -a x$enable_video_cocoa = xyes; then
         save_CFLAGS="$CFLAGS"
-        dnl Work around that we don't have Objective-C support in autoconf
+dnl     Work around that we don't have Objective-C support in autoconf
         CFLAGS="$CFLAGS -x objective-c"
         AC_MSG_CHECKING(for Cocoa framework)
         have_cocoa=no
@@ -2195,7 +2187,7 @@ CheckMETAL()
                                 , enable_render_metal=yes)
     if test x$enable_video = xyes -a x$enable_video_metal = xyes; then
         save_CFLAGS="$CFLAGS"
-        dnl Work around that we don't have Objective-C support in autoconf
+dnl     Work around that we don't have Objective-C support in autoconf
         CFLAGS="$CFLAGS -x objective-c"
         AC_MSG_CHECKING(for Metal framework)
         have_metal=no
@@ -2325,7 +2317,7 @@ CheckKMSDRM()
             AC_MSG_RESULT($kmsdrm_shared)
             if test x$kmsdrm_shared = xyes; then
                 echo "-- dynamic libdrm -> $drm_lib"
-                echo "-- dynamic libgmb -> $gbm_lib"
+                echo "-- dynamic libgbm -> $gbm_lib"
             fi
             have_video=yes
         fi
@@ -2619,7 +2611,7 @@ CheckVulkan()
                 ;;
             *-*-darwin*)
                 save_CFLAGS="$CFLAGS"
-                dnl Work around that we don't have Objective-C support in autoconf
+dnl             Work around that we don't have Objective-C support in autoconf
                 CFLAGS="$CFLAGS -x objective-c"
                 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
                   #include <Cocoa/Cocoa.h>
@@ -2654,7 +2646,7 @@ CheckVulkan()
 dnl See if we can use the new unified event interface in Linux 2.4
 CheckInputEvents()
 {
-    dnl Check for Linux 2.4 unified input event interface support
+dnl Check for Linux 2.4 unified input event interface support
         AC_MSG_CHECKING(for Linux 2.4 unified input interface)
         use_input_events=no
         AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
@@ -2674,7 +2666,6 @@ CheckInputEvents()
 dnl See if we can use the kernel kd.h header
 CheckInputKD()
 {
-
     AC_MSG_CHECKING(for Linux kd.h)
     use_input_kd=no
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
@@ -2876,7 +2867,7 @@ CheckJoystickMFI()
     if test x$enable_joystick_mfi = xyes; then
         save_CFLAGS="$CFLAGS"
         save_LDFLAGS="$LDFLAGS"
-        dnl Work around that we don't have Objective-C support in autoconf
+dnl     Work around that we don't have Objective-C support in autoconf
         CFLAGS="$CFLAGS -x objective-c -fobjc-weak"
         LDFLAGS="$LDFLAGS -Wl,-weak_framework,CoreHaptics -Wl,-weak_framework,GameController"
         AC_MSG_CHECKING(for GameController framework)
@@ -2908,15 +2899,15 @@ CheckJoystickMFI()
 dnl See what type of thread model to use on Linux and Solaris
 CheckPTHREAD()
 {
-    dnl Check for pthread support
+dnl Check for pthread support
 
-    dnl Emscripten pthreads work, but you need to have a non-pthread fallback build
-    dnl  for systems without support. It's not currently enough to not use
-    dnl  pthread functions in a pthread-build; it won't start up on unsupported
-    dnl  browsers. As such, you have to explicitly enable it on Emscripten builds
-    dnl  for the time being. This default with change to ON once this becomes
-    dnl  commonly supported in browsers or the Emscripten teams makes a single
-    dnl  binary work everywhere.
+dnl Emscripten pthreads work, but you need to have a non-pthread fallback build
+dnl  for systems without support. It's not currently enough to not use
+dnl  pthread functions in a pthread-build; it won't start up on unsupported
+dnl  browsers. As such, you have to explicitly enable it on Emscripten builds
+dnl  for the time being. This default with change to ON once this becomes
+dnl  commonly supported in browsers or the Emscripten teams makes a single
+dnl  binary work everywhere.
 
     case "$host" in
         *-*-emscripten*)
@@ -2930,7 +2921,7 @@ CheckPTHREAD()
     AC_ARG_ENABLE(pthreads,
 [AS_HELP_STRING([--enable-pthreads], [use POSIX threads for multi-threading [default=maybe]])],
                   , enable_pthreads=maybe)
-    dnl This is used on Linux for glibc binary compatibility (Doh!)
+dnl This is used on Linux for glibc binary compatibility (Doh!)
     AC_ARG_ENABLE(pthread-sem,
 [AS_HELP_STRING([--enable-pthread-sem], [use pthread semaphores [default=maybe]])],
                   , enable_pthread_sem=maybe)
@@ -3271,7 +3262,14 @@ XINPUT_STATE_EX s1;
         fi
     fi
 
-    AC_CHECK_HEADER(windows.gaming.input.h, have_wgi=yes)
+    AC_MSG_CHECKING(for windows.gaming.input.h)
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#define COBJMACROS
+#include <windows.gaming.input.h>
+__x_ABI_CWindows_CGaming_CInput_CIGamepadStatics2 *s2;
+        ]],[])], [have_wgi=yes],[have_wgi=no])
+    AC_MSG_RESULT($have_wgi)
+
     if test x$have_wgi = xyes; then
         AC_DEFINE(HAVE_WINDOWS_GAMING_INPUT_H, 1, [ ])
     fi
@@ -3482,6 +3480,9 @@ CheckHIDAPI()
                 enable_hidapi_libusb=yes
                 require_hidapi_libusb=yes
                 ;;
+           *-*-os2* )
+                enable_hidapi_libusb=yes
+                ;;
         esac
 
         hidapi_support=yes
@@ -3513,6 +3514,9 @@ CheckHIDAPI()
                             ;;
                         *-*-cygwin* | *-*-mingw* )
                             libusb_lib="libusb-1.0.dll"
+                            ;;
+                        *-*-os2* )
+                            libusb_lib="usb100.dll"
                             ;;
                     esac
                     if test x$libusb_lib = x; then
@@ -3964,6 +3968,10 @@ case "$host" in
                 have_haptic=yes
             fi
         fi
+        AC_CHECK_HEADER(tpcshrd.h,have_tpcshrd_h=yes)
+        if test x$have_tpcshrd_h = xyes; then
+            AC_DEFINE(HAVE_TPCSHRD_H, 1, [ ])
+        fi
         # Set up files for the sensor library
         AC_CHECK_HEADER(sensorsapi.h,have_winsensors=yes,have_winsensors=no)
         if test x$have_winsensors = xyes; then
@@ -4028,14 +4036,12 @@ case "$host" in
             SDL_LIBS="-lcygwin $SDL_LIBS"
         fi
         ;;
-
-    dnl BeOS support removed after SDL 2.0.1. Haiku still works.  --ryan.
+dnl BeOS support removed after SDL 2.0.1. Haiku still works.  --ryan.
     *-*-beos*)
         AC_MSG_ERROR([
 *** BeOS support has been removed as of SDL 2.0.2.
         ])
         ;;
-
     *-*-haiku*)
         ARCH=haiku
         ac_default_prefix=/boot/system
@@ -4418,6 +4424,7 @@ case "$host" in
         CheckDummyVideo
         CheckDiskAudio
         CheckDummyAudio
+        CheckHIDAPI
 
         # Set up the core platform files
         SOURCES="$SOURCES $srcdir/src/core/os2/*.c"
